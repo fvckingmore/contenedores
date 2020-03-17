@@ -6,23 +6,9 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "log.hpp"
 
 using namespace std;
-
-
-struct EVENT {
-
-	string type;
-	string user;
-	string codeText;
-	string account;
-	string date;
-	string priority;
-	string code;
-	string zone;
-
-};
-
 
 class LogFilter {
 
@@ -30,13 +16,16 @@ class LogFilter {
 	static bool validateLog(string line);
 	static string getValues(string line);
 	static string parseValues(string line);*/
+private:
+
+	string date;
 
 public:
 
 	/* Extrae los logs del archivo .log */
-	void getLogs(string fileName) {
+	void getLogData(string fileName, Log &log) {
 
-		string line, values;
+		string line, valuesfilte;
 		ifstream file(fileName.c_str());
 		//file.open();
 
@@ -45,12 +34,19 @@ public:
 			while(!file.eof()) {
 
 				getline(file, line);
+				log.increaseLogsCount();
 
 				if(validateLog(line)) {
 
-					
+					//log.insert(getAccount(line));
+
+					log.insertLog(getData(line, "account"),
+						getData(line, "event_type"));
+					log.increaseEventsCount();
 					//cout<< getValues(line)<< endl;
-					separateValues(getValues(line));
+					//cout<< getData(line, "account")<< " "<< getData(line, "event_type")<< endl;
+					//cout<<getAccount(separateValues(getValues(line), "account"))<<endl;
+					//separateValues(getValues(line));
 				}
 
 				line = "";
@@ -63,10 +59,11 @@ public:
 	}
 
 
-	/* Valida las lineas de log que conitienen la cadena "SIGNALHANDLER" */
+	/* Valida las lineas de log que contienen la cadena "SIGNALHANDLER" */
 	bool validateLog(string line) {
 
-		return line.find("SIGNALHANDLER") != string::npos;
+		return 	line.find("SIGNALHANDLER") != string::npos /*&&
+				line.find(date) != string::npos*/;
 	}
 
 
@@ -76,36 +73,39 @@ public:
 		string values;
 
 		values = line.substr(line.find('{'));
-		values.erase(0, 1);
-		values.erase(values.size()-1, 1);
+		//values.erase(0, 1);
+		//values.erase(values.size()-1, 1);
+		values.erase(values.find('{'), 1);
+		values.erase(values.find('}'), 1);
 
 		return values;
 	}
 
 
-	void separateValues(string line) {
+	string separateValues(string values, string toFind) {
 
 		string value;
-		istringstream sLine (line);
+		istringstream sValues (values);
 
-		while(getline(sLine, value, ',')){
+		while(getline(sValues, value, ',')){
 
 			if(isblank(value[0])) {
 
 				value.erase(0, 1);
 			}
 
-			cout<< value<< endl;
+			if(value.find(toFind) != string::npos)
+				return value;
 		}
+//			cout<< value<< endl;
 
 
-		return ;
+		return "";
 	}
 
 
-	EVENT parseValues(string value) {
+	void parseValues(string value) {
 
-		EVENT event;
 		istringstream sValue (value);
 		string data;
 
@@ -114,19 +114,55 @@ public:
 			isblank(data[0]) ? data.erase(0, 2) : data.erase(0, 1);
 			data.erase(data.size()-1, 1);
 
-			switch(data) {
+			cout<<data<< " ";
 
-				case "event_type":
-
-					break;
-			}
+			
 		}
 
+		cout<<endl;
 
 
 
-		return event;
+
+		//return event;
 	}
+
+
+	string getAccount(string value) {
+
+		istringstream sValue (separateValues(getValues(value), "account"));
+		string data;
+
+		getline(sValue, data, ':');
+		getline(sValue, data, ':');
+
+
+		isblank(data[0]) ? data.erase(0, 2) : data.erase(0, 1);
+		data.erase(data.size()-1, 1);
+
+
+		return data;
+	}
+
+
+	string getData(string value, string dataType) {
+
+		istringstream sValue (separateValues(getValues(value), dataType));
+		string data;
+
+		getline(sValue, data, ':');
+		getline(sValue, data, ':');
+
+
+		isblank(data[0]) ? data.erase(0, 2) : data.erase(0, 1);
+		data.erase(data.size()-1, 1);
+
+
+		return data;
+	}
+
+
+
 };
 
 
