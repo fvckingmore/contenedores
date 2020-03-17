@@ -19,11 +19,12 @@ private:
 public:
 
 	/* Extrae los logs del archivo .log */
-	void getLogData(string fileName, Log &log) {
+	void getLogData(string fileName, Log &log, string date) {
 
-		string line, valuesfilte;
+		this->date = date;
+		fileName.c_str();
+		string line;
 		ifstream file(fileName.c_str());
-		//file.open();
 
 		if(file.is_open()) {
 
@@ -34,6 +35,8 @@ public:
 
 				if(validateLog(line)) {
 
+
+					//cout<<"gge";
 
 					log.insertLog(getData(line, "account"),
 						getData(line, "event_type"));
@@ -56,8 +59,8 @@ public:
 	/* Valida las lineas de log que contienen la cadena "SIGNALHANDLER" */
 	bool validateLog(string line) {
 
-		return 	line.find("SIGNALHANDLER") != string::npos /*&&
-				line.find(date) != string::npos*/;
+		return 	line.find("SIGNALHANDLER") != string::npos &&
+				line.find(date) != string::npos;
 	}
 
 

@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
-#include <iomanip>
+#include <fstream>
 
 using namespace std;
 typedef map<string, int> eventTypeMap;
@@ -41,7 +41,7 @@ public:
 		logsCount += 1;
 	}
 
-	/* Devuelve el contador de cuetas */
+	/* Devuelve el contador de logs */
 	int getLogsCount() {
 		return logsCount;
 	}
@@ -132,9 +132,9 @@ public:
 	}
 
 
-	vector<pair<string, int>> getEvents() {
+	/* Muestra lista de eventos con la cantidad de llamadas */
+	void getEvents() {
 
-		//vector<pair<string, int>> events;
 		map<string, int>::iterator it = eventMap.begin();
 
 		for(; it != eventMap.end(); it++) {
@@ -143,15 +143,17 @@ public:
 
 		sort(events.begin(), events.end(), sortByVal);
 
-		/*for(int i = 0; i < events.size(); i++) {
-			cout<<events[i].first<< ": "<< events[i].second<< endl;
-		}*/
-		return events;
+		cout<< "\tEventos\t:\tCantidad\n\n";
+		for(int i = 0; i < events.size(); i++) {
+			cout<<"\t"<<events[i].first<< "\t:\t"<<events[i].second<< endl;
+		}
+		cout<<endl;
+		return ;
 	}
 
 
 	/* Muestra las cuentas con mas eventos enviados */
-	vector<pair<string, int>> getAccountWithMoreEvents() {
+	void getAccountWithMoreEvents() {
 
 		//vector<pair<string, int>> accounts;
 		map<string, eventTypeMap>::iterator it = logMap.begin();
@@ -162,14 +164,36 @@ public:
 
 		sort(accounts.begin(), accounts.end(), sortByVal);
 
-		/*for(int i = 0; i < 10; i++) {
-			cout<<accounts[i].first<< ": "<< accounts[i].second<< endl;
-		}*/
-		return accounts;
+		cout<< "\tCuenta\t\t:\tEventos\n\n";
+
+		for(int i = 0; i < 10; i++) {
+			cout<<"\t"<<accounts[i].first<< "\t:\t"<< accounts[i].second<< endl;
+		}
+		cout<<endl;
+		return ;
 	}
 
 
+	/* Exporta lista de cuentas a un archivo CSV */
+	void exportToCSV() {
 
+		ofstream csvFile("accountLog.csv");
+
+		csvFile<< "Cuenta,Eventos\n\n";
+		if(csvFile.is_open()) {
+
+			for(int i = 0; i < accounts.size(); i++){
+
+				csvFile<<accounts[i].first<<","<<accounts[i].second<< endl;
+			}
+
+			cout<<"Archivo creado correctamente\n\n";
+			return;
+		}
+		csvFile.close();
+		cout<<"Error al crear el archivo";
+		return;
+	}
 };
 
 
