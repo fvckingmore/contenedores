@@ -12,10 +12,6 @@ using namespace std;
 
 class LogFilter {
 
-	/*static void getLogs(char *filaName);
-	static bool validateLog(string line);
-	static string getValues(string line);
-	static string parseValues(string line);*/
 private:
 
 	string date;
@@ -38,15 +34,13 @@ public:
 
 				if(validateLog(line)) {
 
-					//log.insert(getAccount(line));
 
 					log.insertLog(getData(line, "account"),
 						getData(line, "event_type"));
+
 					log.increaseEventsCount();
-					//cout<< getValues(line)<< endl;
-					//cout<< getData(line, "account")<< " "<< getData(line, "event_type")<< endl;
-					//cout<<getAccount(separateValues(getValues(line), "account"))<<endl;
-					//separateValues(getValues(line));
+
+					log.insertEvent(getData(line, "event_type"));
 				}
 
 				line = "";
@@ -82,6 +76,7 @@ public:
 	}
 
 
+	/* Separa los valores del log */
 	string separateValues(string values, string toFind) {
 
 		string value;
@@ -97,54 +92,11 @@ public:
 			if(value.find(toFind) != string::npos)
 				return value;
 		}
-//			cout<< value<< endl;
-
-
 		return "";
 	}
 
 
-	void parseValues(string value) {
-
-		istringstream sValue (value);
-		string data;
-
-		while(getline(sValue, data, ':')) {
-
-			isblank(data[0]) ? data.erase(0, 2) : data.erase(0, 1);
-			data.erase(data.size()-1, 1);
-
-			cout<<data<< " ";
-
-			
-		}
-
-		cout<<endl;
-
-
-
-
-		//return event;
-	}
-
-
-	string getAccount(string value) {
-
-		istringstream sValue (separateValues(getValues(value), "account"));
-		string data;
-
-		getline(sValue, data, ':');
-		getline(sValue, data, ':');
-
-
-		isblank(data[0]) ? data.erase(0, 2) : data.erase(0, 1);
-		data.erase(data.size()-1, 1);
-
-
-		return data;
-	}
-
-
+	/* Obtiene el dato indicado por la clave 'dataType' */
 	string getData(string value, string dataType) {
 
 		istringstream sValue (separateValues(getValues(value), dataType));
@@ -160,9 +112,6 @@ public:
 
 		return data;
 	}
-
-
-
 };
 
 

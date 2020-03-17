@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 typedef map<string, int> eventTypeMap;
@@ -20,9 +21,12 @@ class Log {
 
 private:
 
-	map<string, eventTypeMap> logMap;
+	eventTypeMap eventMap;
 	int logsCount;
 	int eventsCount;
+	map<string, eventTypeMap> logMap;
+	vector<pair<string, int>> accounts;
+	vector<pair<string, int>> events;
 
 public:
 
@@ -50,6 +54,18 @@ public:
 	/* Devuelve el contador de eventos */
 	int getEventsCount() {
 		return eventsCount;
+	}
+
+	/* Crea un mapa de eventos vacio */
+	eventTypeMap createEventTypeMap() {
+
+		eventTypeMap newEventTypeMap;
+		return newEventTypeMap;
+	}
+
+	/* Devuelve numero de cuentas */
+	int getAccountCount() {
+		return logMap.size();
 	}
 
 	/* Verifica si una cuenta existe */
@@ -94,24 +110,50 @@ public:
 	}
 
 
-	/* Crea un mapa de eventos vacio */
-	eventTypeMap createEventTypeMap() {
-
-		eventTypeMap newEventTypeMap;
-		return newEventTypeMap;
+	/* Verifica un evento repetido */
+	bool checkEvent(string eventToCheck) {
+		if(eventMap.find(eventToCheck) != eventMap.end())
+			return true;
+		return false;
 	}
 
-	/* Devuelve numero de cuentas */
-	int getAccountCount() {
 
-		return logMap.size();
+	/* Agrega un evento al mapa de eventos */
+	void insertEvent(string eventType) {
+
+		if(checkEvent(eventType)) {
+
+			eventMap.find(eventType)->second += 1;
+
+		} else {
+
+			eventMap.insert({eventType, 1});
+		}
+	}
+
+
+	vector<pair<string, int>> getEvents() {
+
+		//vector<pair<string, int>> events;
+		map<string, int>::iterator it = eventMap.begin();
+
+		for(; it != eventMap.end(); it++) {
+			events.push_back({it->first, it->second});
+		}
+
+		sort(events.begin(), events.end(), sortByVal);
+
+		/*for(int i = 0; i < events.size(); i++) {
+			cout<<events[i].first<< ": "<< events[i].second<< endl;
+		}*/
+		return events;
 	}
 
 
 	/* Muestra las cuentas con mas eventos enviados */
-	void accountWithMoreEvents() {
+	vector<pair<string, int>> getAccountWithMoreEvents() {
 
-		vector<pair<string, int>> accounts;
+		//vector<pair<string, int>> accounts;
 		map<string, eventTypeMap>::iterator it = logMap.begin();
 
 		for(; it != logMap.end(); it++) {
@@ -120,10 +162,14 @@ public:
 
 		sort(accounts.begin(), accounts.end(), sortByVal);
 
-		for(int i = 0; i < 10; i++) {
+		/*for(int i = 0; i < 10; i++) {
 			cout<<accounts[i].first<< ": "<< accounts[i].second<< endl;
-		}
+		}*/
+		return accounts;
 	}
+
+
+
 };
 
 
