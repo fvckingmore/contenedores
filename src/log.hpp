@@ -56,7 +56,7 @@ public:
 		return eventsCount;
 	}
 
-	/* Crea un mapa de eventos vacio */
+	/* Constructor de mapa de eventos vacio */
 	eventTypeMap createEventTypeMap() {
 
 		eventTypeMap newEventTypeMap;
