@@ -155,14 +155,23 @@ public:
 	/* Muestra las cuentas con mas eventos enviados */
 	void getAccountWithMoreEvents() {
 
-		//vector<pair<string, int>> accounts;
-		map<string, eventTypeMap>::iterator it = logMap.begin();
+		if(accounts.size() == 0){ 
+			//vector<pair<string, int>> accounts;
+			map<string, eventTypeMap>::iterator it = logMap.begin();
 
-		for(; it != logMap.end(); it++) {
-			accounts.push_back({it->first, it->second.size()});
+			for(; it != logMap.end(); it++) {
+
+				map<string, int>::iterator it2 = it->second.begin();
+				int count = 0;
+				for(; it2 != it->second.end(); it2++) {
+					count += it2->second;
+				}
+				/*accounts.push_back({it->first, it->second.size()});*/
+				accounts.push_back({it->first, count});
+			}
+
+			sort(accounts.begin(), accounts.end(), sortByVal);
 		}
-
-		sort(accounts.begin(), accounts.end(), sortByVal);
 
 		cout<< "\tCuenta\t\t:\tEventos\n\n";
 
